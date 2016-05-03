@@ -1,7 +1,7 @@
 delete(instrfindall); clear; clc; close;
 
 %% Connect to device
-MyCOM = serial('COM6', 'Baudrate', 115200); % Wired FTDI
+MyCOM = serial('COM5', 'Baudrate', 115200); % Wired FTDI
 fopen(MyCOM);
 fprintf(MyCOM, 'k');
 disp('COM open');
@@ -11,8 +11,8 @@ test = 0;
 instring = fscanf(MyCOM,'%s'); % Throw away first string.
 
 % Sets of data collected before finishing program
-len = 1500;
-nrdataset = 14;
+len = 2400;
+nrdataset = 22;
 time = 1:len;
 
 gx = zeros(len,1);
@@ -33,12 +33,25 @@ heading = zeros(len,1);
 
 depth = zeros(len,1);
 
+th1 = zeros(len,1);
+th2 = zeros(len,1);
+th3 = zeros(len,1);
+th4 = zeros(len,1);
+th5 = zeros(len,1);
+th6 = zeros(len,1);
+th7 = zeros(len,1);
+th8 = zeros(len,1);
+
 % figure('units','normalized','outerposition',[0 0 1 1])
-% graf = plot(time, m_x_r_plot, time,  m_y_r_plot, time, m_z_r_plot);
-% graf = plot(time, gx, 'LineWidth', 2);
-% axis([0 len -1000 1000]);
-% grid on;
-% legend('mz');
+ graf = plot(time, gx, time, gx, time, gx);
+%  graf = plot(time, gx, 'LineWidth', 2);
+ axis([0 len -1000 3500]);
+ grid on;
+%  legend('th1', 'th2', 'th3');
+% legend('mx','my','mz');
+% legend('depth');
+% legend('ax','ay','az');
+legend('depth', 'pitch', 'roll');
 %% Collect values from serial
 while (i<=len)
     instring = fscanf(MyCOM,'%s');
@@ -70,15 +83,24 @@ while (i<=len)
     
     depth(i) = M(13)*(2^16) + M(14);
     
-%     set(graf(1), 'YData', gx(1:i));
-%     set(graf(2), 'YData', m_y_r_plot(1:i));
-%     set(graf(3), 'YData', m_z_r_plot(1:i));
-%     
+    th1(i) = M(15);
+    th2(i) = M(16);
+    th3(i) = M(17);
+    th4(i) = M(18);
+    th5(i) = M(19);
+    th6(i) = M(20);
+    th7(i) = M(21);
+    th8(i) = M(22);
+    
+     set(graf(1), 'YData', depth(1:i));
+     set(graf(2), 'YData', pitch(1:i));
+     set(graf(3), 'YData', roll(1:i));
+     
 %     % X-AKSE:
-%     set(graf(1), 'XData', time(1:i));
-%     set(graf(2), 'XData', time(1:i));
-%     set(graf(3), 'XData', time(1:i));
-%     drawnow
+     set(graf(1), 'XData', time(1:i));
+     set(graf(2), 'XData', time(1:i));
+     set(graf(3), 'XData', time(1:i));
+    drawnow
     i = i + 1;
 end
 %% Close connection to device
